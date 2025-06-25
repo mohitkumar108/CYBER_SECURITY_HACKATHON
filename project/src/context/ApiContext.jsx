@@ -66,12 +66,19 @@ export const ApiProvider = ({ children }) => {
   }, []);
 
   const fetchVulns=useCallback(async(keyword)=>{
+    
+    
    try {
     setLoading(true);
       setError(null);
        const res = await axios.get('http://localhost:8000/api/v1/cves', {
-      params: { keyword: 'exim 4.89' } // axios handles encoding
+      params: { keyword } // axios handles encoding
       });
+       
+      
+      
+       
+      return res.data
       } catch (error) {
       setError('Failed to fetch VirusTotal simple data');
       console.error('VirusTotal simple API error:', err);
@@ -158,7 +165,8 @@ const riskLevel = calculateRiskLevel(randomVulns, openPorts);
     fetchVirusTotalData,
     fetchVirusTotalSimple,
     analyzeThreat,
-    clearError
+    clearError,
+    fetchVulns
   };
 
   return <ApiContext.Provider value={value}>{children}</ApiContext.Provider>;

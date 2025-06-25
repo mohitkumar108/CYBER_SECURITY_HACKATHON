@@ -4,7 +4,9 @@ import { useApi } from '../../context/ApiContext';
 
 const IpAnalyzer = () => {
   const [ipAddress, setIpAddress] = useState('');
-  const { loading, error, analyzeThreat, clearError } = useApi();
+  const [keyword, setkeyword] = useState('');
+  const { loading, error, analyzeThreat, clearError,fetchVulns } = useApi();
+  const [vulns,setVulns]=useState()
 
   const handleAnalyze = async (e) => {
     e.preventDefault();
@@ -20,6 +22,17 @@ const IpAnalyzer = () => {
   };
 
   const isValidIp = ipAddress === '' || validateIp(ipAddress);
+
+
+  const handleVuln=async(e)=>{
+    e.preventDefault();
+    console.log(keyword);
+    const res= await fetchVulns(keyword)
+    setVulns(res)
+    console.log("xs",res);
+    
+
+  }
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
@@ -94,7 +107,81 @@ const IpAnalyzer = () => {
           <li>• Historical attack patterns</li>
         </ul>
       </div>
+ 
+
+      <div className="flex items-center gap-3 mt-8 mb-6">
+        <Search className="h-6 w-6 text-primary-600" />
+        <h3 className="text-lg font-semibold text-gray-800">Vulnerabilities Analyzer</h3>
+      </div>
+      
+      <form onSubmit={handleVuln} className="space-y-4">
+        <div>
+          <label htmlFor="ip-input" className="block text-sm font-medium text-gray-700 mb-2">
+            Enter Vulnerability Analyze
+          </label>
+          <div className="relative">
+            <input
+              id="ip-input"
+              type="text"
+              value={keyword}
+              onChange={(e) => setkeyword(e.target.value)}
+              placeholder="e.g., TFTP 1.3"
+              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors ${
+                !isValidIp ? 'border-red-300 bg-red-50' : 'border-gray-300'
+              }`}
+              disabled={loading}
+            />
+            {/* {!isValidIp && (
+              <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                <AlertCircle className="h-5 w-5 text-red-500" />
+              </div>
+            )} */}
+          </div>
+          {/* {!isValidIp && (
+            <p className="text-sm text-red-600 mt-1">Please enter a valid IP address</p>
+          )} */}
+          
+        </div>
+
+        {error && (
+          <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+            <div className="flex items-center gap-2">
+              <AlertCircle className="h-4 w-4 text-red-600" />
+              <p className="text-sm text-red-700">{error}</p>
+            </div>
+          </div>
+        )}
+
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full bg-primary-600 text-white py-3 px-4 rounded-lg hover:bg-primary-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
+        >
+          {loading ? (
+            <>
+              <Loader className="h-4 w-4 animate-spin" />
+              Analyzing...
+            </>
+          ) : (
+            <>
+              <Search className="h-4 w-4" />
+              Analyze Vulnerability
+            </>
+          )}
+        </button>
+      </form>
+
+     
+     
+      
     </div>
+
+    
+
+
+     
+
+    
   );
 };
 
